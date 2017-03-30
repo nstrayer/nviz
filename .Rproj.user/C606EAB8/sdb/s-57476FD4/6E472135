@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#takes a dataframe and returns a plot that shows the structure with missing data highlighted.\n\nmissing_structure <- function(x){\n  x %>%\n    is.na() %>%\n    as_data_frame() %>%\n    mutate(rowNum = 1:dim(.)[1]) %>%\n    gather(variable, missing, -rowNum) %>%\n    ggplot(aes(x = variable,\n               y = rowNum)) +\n    geom_raster(aes(fill = missing)) +\n    # scale_fill_grey(name = \"\",\n    #                 labels = c(\"Present\",\"Missing\")) +\n    scale_fill_manual(values = c(\"#636363\",\"#f03b20\")) +\n    theme_minimal() +\n    geom_vline(aes(xintercept = which(variable %in% variable) - 0.5), alpha = 0.3) +\n    theme(axis.text.x  = element_text(angle=45, hjust = 1, vjust = 1)) +\n    labs(x = \"Variables in Dataset\",\n         y = \"Rows / observations\")\n}\n",
+    "created" : 1490894669934.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3975962294",
+    "id" : "6E472135",
+    "lastKnownWriteTime" : 1490894708,
+    "last_content_update" : 1490894708524,
+    "path" : "~/research/R_packages/nviz/R/missing_structure.R",
+    "project_path" : "R/missing_structure.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

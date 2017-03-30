@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# Takes an alternating logistic regression fit from the ordgee function\n# and generates a nice table with plots of the coefficient values and their confidence intervals.\n\nalr_results <- function(model_fit, title){\n  model_summary <- summary(model_fit)\n\n  #Grab the mean model estimates and standard errors\n  mean_model_params <- model_summary$mean[,c(1,2)] %>%\n    mutate(model_type = \"mean model\", variable = row.names(.))\n  #Grab the correlation model's as well\n  corr_model_params <- model_summary$correlation[,c(1,2)] %>%\n    mutate(model_type = \"correlation model\", variable = row.names(.))\n  #combine the two\n  model_params <- rbind(mean_model_params, corr_model_params) %>%\n    mutate(model_type = fct_inorder(model_type))\n\n  ggplot(model_params, aes(y = estimate,x = variable, color = variable)) +\n    geom_hline(yintercept = 0, alpha = 0.2)+\n    geom_pointrange(aes(ymin = estimate - 1.96*san.se, ymax = estimate +1.96*san.se)) +\n    geom_text(aes(label = sprintf(\"Est: %3.3f\", estimate)),\n              vjust = -1, size = 3)+\n    geom_text(aes(label = sprintf(\"SE: %3.3f\", san.se)),\n              vjust = 1.8, size = 3)+\n    facet_wrap(~model_type, scales = \"free_y\") +\n    coord_flip() +\n    scale_colour_brewer(palette=\"Paired\") +\n    labs(y = \"coefficient estimate\", title = title, subtitle = \"The 'mean model' panel contains estimates of the effect of a given variable's one unit increase\\n(holding all other variables constant) on the log-odds of infection occuring at a given measurement.\\n\\nThe 'correlation model' panel shows a variable's effect on the log-odds of an infection occuring given\\nan infection occured at another measurement.\\n\")\n}\n",
+    "created" : 1490894444303.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1945267032",
+    "id" : "119BBA87",
+    "lastKnownWriteTime" : 1490894504,
+    "last_content_update" : 1490894504315,
+    "path" : "~/research/R_packages/nviz/R/alr_results.R",
+    "project_path" : "R/alr_results.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
