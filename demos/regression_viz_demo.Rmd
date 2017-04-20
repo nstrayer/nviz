@@ -1,5 +1,5 @@
 ---
-title: "Demo of the regression_viz()"
+title: "More Intuitive Regression Output"
 author: "Nick Strayer"
 date: "April 19, 2017"
 output: html_document
@@ -14,22 +14,25 @@ library(nviz)
 
 ## Motivation
 
-Ever desired to report the results of a regression in a meaningful way but weren't a fan of another table making your report boring?
+Recently I was pointed in the direction of a post titled [Visualizing Regression](http://stephanieevergreen.com/visualizing-regression/) on the blog of the popular data-visualization practisioner Stephanie Evergreen (although it is a guest post and not written by Stephanie). In it the authors point out the fact that common regression tables are an all around bad way of reporting the results of a regression. While I whole heartedly agree with the premise there were a few rather large mistakes in the interpretations behind the regression output. 
 
-As statisticians we're programmed to think with tables, but they do a very poor job of allowing rapid comparisons between multiple models, appreciation of effect size and generally just being engaging to readers. 
+![](regression_mistake.png)
 
-This is an attempt to combine the precision of tables with the intuition of a plot. Bars represent coefficient estimates along with the mean and standard error written above. You can optionally have a bar drawn at 0 for a visual p-value (if the 95% interval doesn't go over that line, you have a significant p-value.)
+Having lived in both the data visualization world (I worked as a "data-artist in residence" at a tech startup in California and also having been a reporter in the graphics department at the New York Times) and also the statistics world (I have an Bachlors in statistics and am currently working towards my PhD) I have many thoughts on issues like this. 
 
-## Demonstration
+I firmly believe that in order to make a truly great visualization you must be utterly familiar with the underlying mechanisms behind what you are visualizing. Pretty regression results are absolutely what we should shoot for, as long as they are utterly truthful to the true meaning of the data/statistics they are visually encoding. 
 
-Let's test it out with a few contrived models. 
+This is not an easy task at all. The reason regression tables are still used so much is two fold. __One:__ the person reading the table is a statistian and have gone through a terrible amount of school to be able to look at the rows and columns and understand what they mean. __Two:__ making a better representation is hard and not the primary focus of most statisticians.  
 
-First we load our packages to make our life easier.
+I have visualized a lot of regression outputs in my course work and jobs and while I have never had the pleasure of doing a full proper study into effectiveness of different representations I have developed a style that I believe helps immediately impart the important results from a regression model, including effect size and confidence intervals, while also appeasing those who desire the non-nonesense precision of a table. I am not saying this is the perfect way (or even a particularly good way) but I do believe it's better than what I see in 95% of papers/ reports I read. 
 
-```{r, eval = FALSE}
-library(tidyverse)
-library(nviz)
-```
+
+## My Solution
+
+In order to demonstrate the utility of my result form I will generate some fake data that we will fit a few models to. 
+
+
+__Data__: 
 
 Next we generate some fake data. 
 
@@ -46,7 +49,9 @@ my_cool_data <- data_frame(
 
 This is a contrived example but note that the true outcome generation procedure has an interaction between `x1` and `x3` and no true relationship between `x3` alone and the outcome. 
 
-Now let's fit a few different models to this so we can compare them. 
+__Fit Models:__
+
+Now that we have some fake data we can fit three different plain linear models to it. 
 
 ```{r}
 no_interaction    <- lm(y ~ x1 + x2 + x3, data = my_cool_data)
@@ -54,10 +59,11 @@ wrong_interaction <- lm(y ~ x1 + x2 + x3 + x2:x3, data = my_cool_data)
 right_interaction <- lm(y ~ x1 + x2 + x3 + x1:x3, data = my_cool_data)
 ```
 
-Another note, this is not really a fair comparison but I'm doing it to keep the data-generation simple. When we compare model coefficients in almost every scenario we would want all of the models to contain exactly the same terms as then the inference on them will be comparable. For instance you would compare a model done with Lasso penalization to a non-penalized model with the same values to see the extent of shrinkage on your coefficients. 
+Another note, this is not really a fair comparison but I'm doing it to keep the data-generation simple. When we compare model coefficients in almost every scenario we would want all of the models to contain exactly the same terms as then the inference on them will be comparable. For instance you would compare a model done with Lasso penalization to a non-penalized model with the same values to see the extent of shrinkage on your coefficients. I recognize the irony in attempting to demonstrate a statistially sound practice by using statistically unsound practices. 
 
-Okay, now that the lame formatlities are over, let's send the data to our function. 
+__Show It:__
 
+Lastly we can plot the results for the coefficient estimates for these models. 
 
 ```{r}
 my_models <- list(no_interaction, wrong_interaction, right_interaction )
@@ -66,15 +72,23 @@ names(my_models) <- c("No Interaction", "Wrong Interaction", "Right Interaction"
 regression_viz(my_models, plot_title = "Comparing Beta estimates")
 ```
 
-We can also just plot a single model.
+Essentially all this is a forest plot, combined with the data's true exact value written above each coefficient estimate. 
 
-```{r}
-regression_viz(right_interaction, plot_title = "The correct model")
-```
+Looking at this chart you can immediately see that the confidence intervals for the correct model "right interaction" are much smaller than the other models. This makes sense as our model was set up to perfectly match the data generation (aka something that never happens). We can also see that while the other models give highly significant results for the covariate `x3` the correct interaction model _correctly_ identifies it as statistically zero. Also, `x1`'s effect is significantly attenuated towards zero. Both of these are due to the unplotted interaction coefficient absorbing a lot of the effect that the other models didn't properly account for. 
 
-## What we get from this
+I personally believe these observations are much easier in this type of display than from a simple table. In addition, to satisfy those who hate pictures and find comfort in cold-hard numbers, they are still there, eliminating the need for both a plot and a table. 
 
-So looking at this chart you can immediately see that the confidence intervals for the correct model "right interaction" are much smaller than the other models. This makes sense as our model was set up to perfectly match the data generation (aka something that never happens). We can also see that while the other models give highly significant results for the covariate `x3` the correct interaction model _correctly_ identifies it as statistically zero. Also `x1`'s effect is significantly attenuated towards zero. Both of these are due to the unplotted interaction coefficient absorbing a lot of the effect that the other models didn't properly account for. 
+The most important aspect of this chart are the descriptions above. Reminding the viewer what the true intepretation of a coefficient is (something statisticians have to do themselves regularly), in addition making the confidence interval meaning clear as well. 
 
-I personally believe these observations are much easier in this type of display than from a simple table. In addition to satisfy the statisticians who need to concrete numbers, they are still there, eliminating the need for both a plot and a table. 
+## How to make it better
+
+Like I said before I realize this plot could be way better. The immediate things that jump out to me about it are:
+
+- _It's the same dot and line style that everyone uses._ I do wish I knew how to visualize frequentist uncertianty better. It's a tough issue and attempts to simplify it often get it wrong (see the blog post from the start of this.) The truth is frequentist confidence intervals make absolutely no statment about probabilities in them, it's just an interval that should somewhere within it contain the true value if the experiement was repeated a ton of times. This carries into the next point...
+- _There are so many words!_ Again, yes, I know and I don't like it. Ideally a visualization would just impart these characteristics to the viewer, but I am not clever enough to have figured out how to do that with regression models. Ultimately the math behind a point estimate or a confidence interval is non-trivial and sometimes you have to read to put yourself into the correct mindframe to interpret the following picture. 
+
+
+## Further
+
+As was obvious, this is simply a function I called. It is a function in my personal R package [nviz](https://github.com/nstrayer/nviz). Currently it is only on github but it can be installed using devtools with `devtools::install_github('nstrayer/nviz')`. 
 
