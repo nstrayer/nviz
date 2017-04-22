@@ -69,14 +69,16 @@ regression_viz <- function(model_or_models, plot_title = "", zero_line = TRUE, o
 
   #if the user has a param interpretation desired make it here. Useful to be able to disable as it doesn't fit all models
   if(model_interp == "default"){
-    our_subtitle <- "Estimates for each predictors coefficient represents the change in the expected outcome caused\nchanging the given predictor's value by one unit, while holding all other predictors constant.\n\nConfidence intervals represent the region of values for the estimate that, given we were to collect\nnew data from the same population and repeat the regression the interval will contain the true\ncoefficient value that percent of the time."
+    our_subtitle <- "Coefficient estimates represent the change in the expected outcome caused by changing\nthe given predictor's value one unit, while holding all other predictors constant.\n\nThe Confidence intervals represent the region of values for each coefficient that,\ngiven we were to collect data again from the same population and repeat the regression,\nthe interval will contain the true coefficient value 95% of the time."
   } else {
     our_subtitle = model_interp
   }
 
 
   #plot it
-  plot_base <- ggplot2::ggplot(all_fits_sorted, ggplot2::aes(x = model.name, y = estimate))
+  plot_base <- ggplot2::ggplot(all_fits_sorted, ggplot2::aes(x = model.name, y = estimate)) +
+    ggplot2::theme( axis.text.y = element_text(angle = -30, hjust = 1) )
+
 
   if (zero_line){
     plot_base <- plot_base + ggplot2::geom_hline(yintercept = 0, alpha = 0.5, color = "steelblue")

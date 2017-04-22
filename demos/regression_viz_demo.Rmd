@@ -16,7 +16,6 @@ library(nviz)
 
 Recently I was pointed in the direction of a post titled [Visualizing Regression](http://stephanieevergreen.com/visualizing-regression/) on the blog of the popular data-visualization practisioner Stephanie Evergreen (although it is a guest post and not written by Stephanie). In it the authors point out the fact that common regression tables are an all around bad way of reporting the results of a regression. While I whole heartedly agree with the premise there were a few rather large mistakes in the interpretations behind the regression output. 
 
-![](regression_mistake.png)
 
 Having lived in both the data visualization world (I worked as a "data-artist in residence" at a tech startup in California and also having been a reporter in the graphics department at the New York Times) and also the statistics world (I have an Bachlors in statistics and am currently working towards my PhD) I have many thoughts on issues like this. 
 
@@ -69,7 +68,7 @@ Lastly we can plot the results for the coefficient estimates for these models.
 my_models <- list(no_interaction, wrong_interaction, right_interaction )
 names(my_models) <- c("No Interaction", "Wrong Interaction", "Right Interaction")
 
-regression_viz(my_models, plot_title = "Comparing Beta estimates")
+regression_viz(my_models, plot_title = "Comparing Beta estimates") 
 ```
 
 Essentially all this is a forest plot, combined with the data's true exact value written above each coefficient estimate. 
